@@ -1,0 +1,10 @@
+.DS_Store
+
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+offchain/target/
+offchain/Cargo.lock
+
+.env

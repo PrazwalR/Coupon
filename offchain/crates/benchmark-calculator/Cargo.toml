@@ -1,0 +1,19 @@
+[package]
+name = "benchmark-calculator"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+live = ["dep:ureq", "dep:serde_json"]
+
+[dependencies]
+ureq = { version = "2", optional = true, features = ["json"] }
+serde_json = { version = "1", optional = true }
+
+[lib]
+name = "benchmark_calculator"
+path = "src/lib.rs"
+
+[[bin]]
+name = "benchmark-calculator"
+path = "src/main.rs"
