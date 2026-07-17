@@ -1,0 +1,14 @@
+[package]
+name = "keeper"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[lib]
+name = "keeper"
+path = "src/lib.rs"
+
+[[bin]]
+name = "keeper"
+path = "src/main.rs"
