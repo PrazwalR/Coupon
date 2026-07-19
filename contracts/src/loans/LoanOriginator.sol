@@ -130,9 +130,13 @@ contract LoanOriginator is ReentrancyGuard {
         uint256 total = loan.principal + accruedInterest(loanId);
         asset.safeTransferFrom(msg.sender, address(this), total);
 
-        uint256 balBefore = asset.balanceOf(address(this));
-        swapMarket.settle(loan.hedgeSwapId);
-        int256 hedgePnl = int256(asset.balanceOf(address(this))) - int256(balBefore);
+        int256 hedgePnl = 0;
+        (,,,,,,, uint256 hedgeMaturity, bool hedgeSettled) = swapMarket.positions(loan.hedgeSwapId);
+        if (!hedgeSettled && block.timestamp >= hedgeMaturity) {
+            uint256 balBefore = asset.balanceOf(address(this));
+            swapMarket.settle(loan.hedgeSwapId);
+            hedgePnl = int256(asset.balanceOf(address(this))) - int256(balBefore);
+        }
 
         totalCollateralHeld -= loan.collateral;
         asset.safeTransfer(loan.borrower, loan.collateral);

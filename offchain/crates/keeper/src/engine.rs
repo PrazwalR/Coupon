@@ -75,4 +75,36 @@ mod tests {
         assert_eq!(*chain.liquidated.borrow(), vec![1]);
         assert_eq!(*chain.settled.borrow(), vec![2]);
     }
+
+    #[test]
+    fn multiple_underwater_all_liquidated() {
+        let now = SECONDS_PER_YEAR as u64;
+        let positions = vec![
+            base(1, 0.20, now * 10, false),
+            base(2, 0.25, now * 10, false),
+            base(3, 0.05, now * 10, false),
+        ];
+        let chain = MockChain::new(now, 1.10, positions);
+        let actions = run_once(&chain);
+        assert_eq!(actions.liquidated, vec![1, 2]);
+        assert!(actions.settled.is_empty());
+    }
+
+    #[test]
+    fn matured_and_liquidatable_prioritizes_liquidation() {
+        let now = SECONDS_PER_YEAR as u64;
+        let positions = vec![base(1, 0.30, now, false)];
+        let chain = MockChain::new(now, 1.05, positions);
+        let actions = run_once(&chain);
+        assert_eq!(actions.liquidated, vec![1]);
+        assert!(actions.settled.is_empty());
+    }
+
+    #[test]
+    fn empty_positions_no_actions() {
+        let chain = MockChain::new(1000, 1.0, vec![]);
+        let actions = run_once(&chain);
+        assert!(actions.liquidated.is_empty());
+        assert!(actions.settled.is_empty());
+    }
 }

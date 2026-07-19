@@ -58,4 +58,20 @@ mod tests {
         assert!(!p.should_publish(1_100, 0.0710));
         assert!(p.should_publish(1_100, 0.0730));
     }
+
+    #[test]
+    fn boundaries_trigger() {
+        let mut p = HeartbeatPublisher::new(43_200, 25.0);
+        p.record(1_000, 0.0700);
+        assert!(p.should_publish(1_000 + 43_200, 0.0700));
+        assert!(p.should_publish(1_001, 0.0726));
+        assert!(!p.should_publish(1_001, 0.0724));
+    }
+
+    #[test]
+    fn deviation_downward_triggers() {
+        let mut p = HeartbeatPublisher::new(43_200, 25.0);
+        p.record(1_000, 0.0700);
+        assert!(p.should_publish(1_001, 0.0675));
+    }
 }

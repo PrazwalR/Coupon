@@ -73,4 +73,20 @@ mod tests {
         let h = mark_position(&p, 1.10, SECONDS_PER_YEAR as u64);
         assert!(h.pnl < 0.0);
     }
+
+    #[test]
+    fn zero_notional_zero_pnl() {
+        let mut p = pos();
+        p.notional = 0.0;
+        let h = mark_position(&p, 1.10, SECONDS_PER_YEAR as u64);
+        assert_eq!(h.pnl, 0.0);
+    }
+
+    #[test]
+    fn pnl_matches_solidity_scale() {
+        let p = pos();
+        let h = mark_position(&p, 1.22, (2.0 * SECONDS_PER_YEAR) as u64);
+        let expected = (0.22 - 0.07 * 2.0) * 1_000.0;
+        assert!((h.pnl - expected).abs() < 1e-6);
+    }
 }

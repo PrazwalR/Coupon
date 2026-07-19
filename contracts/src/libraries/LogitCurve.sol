@@ -4,8 +4,6 @@ pragma solidity ^0.8.24;
 import {FixedPointMath} from "./FixedPointMath.sol";
 
 library LogitCurve {
-    using FixedPointMath for uint256;
-
     uint256 internal constant WAD = 1e18;
     uint256 internal constant EPS = 1e12;
 

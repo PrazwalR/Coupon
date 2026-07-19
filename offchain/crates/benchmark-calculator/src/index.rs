@@ -84,4 +84,30 @@ mod tests {
         let diff = to_wad(0.07) as i128 - 70_000_000_000_000_000i128;
         assert!(diff.abs() < 1_000);
     }
+
+    #[test]
+    fn all_phase_zero_errors() {
+        let idx = BenchmarkIndex::new(vec![c("a", 5000, 0.0), c("b", 5000, 0.0)]);
+        let mut src = MockSource::default();
+        src.set("a", 0.06);
+        src.set("b", 0.10);
+        assert!(idx.compute(&src).is_err());
+    }
+
+    #[test]
+    fn partial_phase_in_ramps_weight() {
+        let idx = BenchmarkIndex::new(vec![c("a", 5000, 1.0), c("b", 5000, 0.5)]);
+        let mut src = MockSource::default();
+        src.set("a", 0.06);
+        src.set("b", 0.10);
+        let r = idx.compute(&src).unwrap();
+        assert!((r - 0.0733333).abs() < 1e-4);
+    }
+
+    #[test]
+    fn missing_rate_errors() {
+        let idx = BenchmarkIndex::new(vec![c("a", 10_000, 1.0)]);
+        let src = MockSource::default();
+        assert!(idx.compute(&src).is_err());
+    }
 }
